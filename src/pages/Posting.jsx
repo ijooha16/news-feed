@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import supabase from "../supabase/client";
-// import { SearchInput } from "../components/SearchInput";
-// import SigninLoginBtn from "../components/SigninLoginBtn";
 import AddIcon from "../assets/icon_add_black.png";
 import { StBtn, ContentsBox, LoginTxt } from "../shared/styleGuide";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { uploadFile } from "../supabase/dao/ImgDao";
+import PostsAPI from "../supabase/dao/postDao";
 // import { AuthContext } from "../context/AuthProvider";
 
 const Posting = () => {
   //페이지 이동후 스크롤 위치
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -19,11 +19,11 @@ const Posting = () => {
   supabase.from("posts").insert({ posts });
 
   const [formData, setFormData] = useState({
-    post_id: "",
-    title: "",
-    travelLocation: "",
+    post_id: sessionStorage.getItem("post_id") || "",
+    title: sessionStorage.getItem("post_title") || "",
+    travelLocation: sessionStorage.getItem("post_travel") || "",
     file: null,
-    content: "",
+    content: sessionStorage.getItem("post_content") || "",
   });
   const [selectedFile, setSelectedFile] = useState(null); //미리보기 이미지 상태
   const navigate = useNavigate();
@@ -42,7 +42,6 @@ const Posting = () => {
   //인풋값 입력
   const handleChangeInput = e => {
     const { name, value, type, files } = e.target;
-
     setFormData(prev => ({
       ...prev,
       [name]: type === "file" ? files[0] : value,
@@ -82,7 +81,7 @@ const Posting = () => {
       // console.log("imgUrl : ", imgUrl);
       const { data, error } = await supabase
         .from("posts")
-        .insert([
+        .upsert([
           {
             uid: userId,
             title: formData.title,
@@ -107,6 +106,12 @@ const Posting = () => {
         file: null,
         content: "",
       });
+
+      await PostsAPI.deletePost(sessionStorage.getItem("post_id"));
+      sessionStorage.setItem("post_id", "");
+      sessionStorage.setItem("post_title", "");
+      sessionStorage.setItem("post_travel", "");
+      sessionStorage.setItem("post_content", "");
       // console.log("폼 데이터 초기화 완료");
       navigate("/");
       // console.log("네비게이션 실행됨");

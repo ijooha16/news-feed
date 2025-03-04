@@ -12,6 +12,19 @@ const PostsAPI = {
       return [];
     }
   },
+  getPostsbyId: async post_id => {
+    try {
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("post_id", post_id);
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error("게시글 가져오기 오류:", error.message);
+      return [];
+    }
+  },
 
   // 게시글 추가
   insertPost: async formData => {
@@ -62,7 +75,6 @@ const PostsAPI = {
         .from("posts")
         .delete()
         .eq("post_id", post_id);
-
       if (error) throw error;
       return true;
     } catch (error) {

@@ -21,8 +21,11 @@ async function uploadFile(file) {
 }
 
 async function loadFile(file_path) {
-  const { data } = supabase.storage.from("img_bucket").getPublicUrl(file_path);
-  console.log("loadFile: ", data);
+  const { data } = supabase.storage
+    .from("img_bucket/uploads")
+    .getPublicUrl(file_path);
+  console.log(data);
+
   return data;
 }
 

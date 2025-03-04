@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { HomeContext } from "../context/HomeContext";
 import Comments from "../components/Comment";
 import CommentsAPI from "../supabase/dao/commentDao";
-import PostsAPI from "../supabase/dao/postDao";
 import HeartIcon from "../components/HeartIcon";
 import supabase from "../supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -57,8 +56,6 @@ const ShowModal = ({ post, closeModal }) => {
       // 최신 상태를 유지하며 댓글 목록 업데이트
       setFormData(comments.filter(c => c.post_id !== post_id));
 
-      
-      
       // 좋아요 삭제
       const { error: likeError } = await supabase
         .from("likes")
@@ -91,32 +88,20 @@ const ShowModal = ({ post, closeModal }) => {
 
       // 최신 상태를 유지하며 게시물 목록 업데이트
       setPosts(prevPosts => prevPosts.filter(e => e.post_id !== post_id));
-      navigate('/my-page')
+      navigate("/my-page");
       closeModal();
     } catch (error) {
       console.error("삭제 중 오류 발생:", error);
     }
   };
 
-  const editPostHandler = async (post_id) => {
-    try {
-      const { data, error } = await supabase
-        .from("posts")
-        .update({
-          uid: sessionStorage.getItem("id"),
-          title: formData.title,
-          travel_location: formData.travel_location,
-          content: formData.content,
-          img_list: JSON.stringify({ publicUrl: img_path.publicUrl }),
-        })
-        .eq("post_id", post_id);
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error("게시글 수정 오류:", error.message);
-      return null;
-    }
+  const editPostHandler = async post => {
+    sessionStorage.setItem("post_id", post.post_id);
+    sessionStorage.setItem("post_title", post.title);
+    sessionStorage.setItem("post_travel", post.travel_location);
+    sessionStorage.setItem("post_content", post.content);
+    console.log(post);
+    navigate("/posting");
   };
 
   return (
@@ -126,7 +111,7 @@ const ShowModal = ({ post, closeModal }) => {
           <PostTitle>{post.title}</PostTitle>
           <p>{users.nickname}</p>
           <ButtonDiv>
-            <button onClick={() => editPostHandler(post.post_id)}>수정</button>
+            <button onClick={() => editPostHandler(post)}>수정</button>
             <button onClick={() => removePostHandler(post.post_id)}>
               삭제
             </button>

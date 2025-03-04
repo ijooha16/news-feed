@@ -11,7 +11,6 @@ export default function Comments({ post_id }) {
     async function loadComments() {
       const data = await CommentsDao.getComments(post_id);
       if (data) setComments(data);
-      console.log(data);
     }
     loadComments();
   }, [post_id]);

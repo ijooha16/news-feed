@@ -12,7 +12,7 @@ import ProfileModal from "../pages/ProfileModal.jsx";
 import PostingModal from "../pages/PostingModal.jsx";
 
 const Router = () => {
-  const { isSignin } = useContext(AuthContext);
+  //const { isSignin } = useContext(AuthContext);
 
   return (
     <BrowserRouter>

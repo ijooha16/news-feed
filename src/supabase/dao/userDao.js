@@ -10,7 +10,7 @@ const UsersAPI = {
       const { data, error } = await supabase
         .from("users")
         .update({
-          nick_name: formData.nick_name,
+          nickname: formData.nickname,
           mbti: formData.mbti,
           introduction: formData.introduction,
           link: formData.link,
